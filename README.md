@@ -1,3 +1,5 @@
+This repository is archived. Please use https://github.com/lpryszcz/redundans for updates and reporting any new issues. 
+
 ### Table of Contents
 - **[Redundans](#redundans)**  
   - **[Prerequisites](#prerequisites)**  
