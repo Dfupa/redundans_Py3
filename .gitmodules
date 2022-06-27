@@ -8,11 +8,11 @@
 
 [submodule "bin/pyScaf"]
     path = bin/pyScaf
-    url = https://github.com/lpryszcz/pyScaf.git
+    url = https://github.com/Gabaldonlab/pyScaf
 
 [submodule "bin/pyScaf/FastaIndex"]
     path = bin/pyScaf/FastaIndex
-    url = https://github.com/lpryszcz/FastaIndex.git
+    url = https://github.com/Gabaldonlab/FastaIndex.git
     
 [submodule "bin/last"]
 	path = bin/last
