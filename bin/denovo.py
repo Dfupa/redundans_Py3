@@ -52,13 +52,13 @@ def get_best_lib(fastq, frac=0.66, verbose=0):
     """Select best library"""
     lib2data = {fn: get_readlen_and_seqsize(fn) for fn in fastq}#; print lib2data
     # select largest lib in 70-150 read len range
-    _fastq = filter(lambda x: 70<=lib2data[x][0]<=150, fastq)
+    _fastq = [x for x in fastq if 70<=lib2data[x][0]<=150]
     if _fastq:
         fastq = _fastq
     # return libs having frac*max size
     sizes = [lib2data[fn][1] for fn in fastq]    
     maxsize = max(sizes)
-    return filter(lambda x: lib2data[x][1] >= frac*maxsize, fastq), sum(sizes)
+    return [x for x in fastq if lib2data[x][1] >= frac*maxsize], sum(sizes)
 
 def get_named_fifo():
     """Return named FIFO"""
@@ -78,7 +78,7 @@ def run_assembly(prefix, fastq, threads, mem, tmpdir, log, locallog):
     # write FastA to fifo
     with open(tmp, 'w') as pipe:
         cmd = ["cat", ] + fastq
-        if filter(lambda fn: fn.endswith('.gz'), fastq):
+        if [fn for fn in fastq if fn.endswith('.gz')]:
             cmd[0] = "zcat" 
         parser = Popen(cmd, stdout=pipe, stderr=locallog)
         parser.wait()
@@ -160,7 +160,7 @@ def denovo(outdir, fastq, threads, mem, verbose, log, tmpdir='/tmp'):
     # estimate insert size
     # fq1, fq2, readlen, ismedian, ismean, isstd, pairs, orientation
     libdata = fastq2insert_size(log, fastq, prefix+"_contig.fa", threads=threads)
-    pelibs = filter(lambda x: x[-1] in ('FR', ) and 100<x[4]<1000, libdata) #'RF'
+    pelibs = [x for x in libdata if x[-1] in ('FR', ) and 100<x[4]<1000] #'RF'
     if pelibs:
         pefastq = list(sorted(pelibs, key=lambda x: x[4])[0][:2])
         if verbose:

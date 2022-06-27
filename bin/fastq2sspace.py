@@ -158,11 +158,11 @@ def _last2pairs(handle):
             continue
         # unpack
         (score, t, tstart, talg, tstrand, tsize, q, qstart, qalg, qstrand, qsize, blocks) = l.split()[:12]
-        score, tstart, talg = map(int, (score, tstart, talg))
+        score, tstart, talg = list(map(int, (score, tstart, talg)))
         # report previous query
         if pq != q:
             #print map(len, hits)
-            if map(len, hits) == [1, 1] and hits[0][0][-1][:-1] == hits[1][0][-1][:-1]:
+            if list(map(len, hits)) == [1, 1] and hits[0][0][-1][:-1] == hits[1][0][-1][:-1]:
                 yield hits[0][0][1:4], hits[1][0][1:4]
                 hits = [[]]
             elif len(hits)==2:
@@ -180,7 +180,7 @@ def _last2pairs(handle):
             hits[-1].append(data)
         pq = q
     # yield last bit
-    if map(len, hits) == [1, 1] and hits[0][0][-1][:-1] == hits[1][0][-1][:-1]:
+    if list(map(len, hits)) == [1, 1] and hits[0][0][-1][:-1] == hits[1][0][-1][:-1]:
         yield hits[0][0][1:4], hits[1][0][1:4]
     
 def last_tab2sspace_tab(handle, out, mapqTh, upto, verbose, log, proc=""):

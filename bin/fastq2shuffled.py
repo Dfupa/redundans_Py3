@@ -2,7 +2,7 @@
 
 import os, sys, subprocess, gzip
 if sys.version_info < (3,):
-    from itertools import izip as zip
+    
 
 def fqparser(fn, stripNames=0, pair="", i=0):
     """Single process implementation of rawtrimmer.

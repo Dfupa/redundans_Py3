@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 desc="""Heterozygous genome assembly pipeline. It consists of three steps:
 reduction, scaffolding and gap closing.
 
@@ -31,7 +31,7 @@ sys.path = paths + sys.path
 os.environ["PATH"] = "%s:%s"%(':'.join(paths), os.environ["PATH"])
 
 # make sure using Python 2.7 or 3?
-assert sys.version_info >= (2, 7) and sys.version_info < (3,), "Only Python 2.7 is supported!"
+assert sys.version_info >= (3,), "Only Python 3 is supported!"
 
 from fasta2homozygous import fasta2homozygous
 from fastq2sspace import fastq2sspace
@@ -50,7 +50,7 @@ def get_libraries(fastq, fasta, mapq=10, threads=4, verbose=1, log=sys.stderr, l
     """Return libraries"""
     # skip if all libs OKish
     ## max stdfrac cannot be larger than stdfracTh in any of the libraries
-    if libraries and not filter(lambda x: x>stdfracTh, (max(lib[5]) for lib in libraries)):
+    if libraries and not [x for x in (max(lib[5]) for lib in libraries) if x>stdfracTh]:
         return libraries
     
     # otherwise process all reads
@@ -331,7 +331,7 @@ def redundans(fastq, longreads, fasta, reference, outdir, mapq,
                                             linkratio, limit, iters, sspacebin, gapclosing, verbose, usebwa, log, \
                                             identity, overlap, minLength, resume)
         # update fasta list
-        fastas += filter(lambda x: "_gapcloser" not in x, sorted(glob.glob(os.path.join(outdir, "_sspace.*.fa"))))
+        fastas += [x for x in sorted(glob.glob(os.path.join(outdir, "_sspace.*.fa"))) if "_gapcloser" not in x]
         lastOutFn = outfn
         fastas.append(lastOutFn); _check_fasta(lastOutFn)
 
@@ -415,7 +415,7 @@ def redundans(fastq, longreads, fasta, reference, outdir, mapq,
             log.write("%sCleaning-up...\n"%timestamp())
         for root, dirs, fnames in os.walk(outdir):
             endings = ('.fa', '.fasta', '.fai', '.tsv', '.png', '.log')
-            for i, fn in enumerate(filter(lambda x: not x.endswith(endings), fnames), 1):
+            for i, fn in enumerate([x for x in fnames if not x.endswith(endings)], 1):
                 os.unlink(os.path.join(root, fn))
             # rmdir of snap index
             if root.endswith('.snap') and i==len(fnames):
@@ -434,7 +434,7 @@ def _check_dependencies(dependencies):
     warning = 0
     # check dependencies
     info = "[WARNING] Old version of %s: %s. Update to version %s+!\n"
-    for cmd, version in dependencies.items():
+    for cmd, version in list(dependencies.items()):
         out = _check_executable(cmd)
         if "not found" in out:
             warning = 1
