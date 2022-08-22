@@ -9,6 +9,9 @@ epilog="""Author:
 Leszek Pryszcz/l.p.pryszcz@gmail.com
 Modified by Salvador Capella-Gutierrez/salcagu@gmail.com
 
+Updated to Python3 by Diego Fuentes Palacios
+Barcelona 08/18/2022
+
 Barcelona, 01/01/2014
 """
 

@@ -17,6 +17,9 @@ epilog="""Author:
 l.p.pryszcz+git@gmail.com
 
 Mizerow/Warsaw/Bratislava/Barcelona, 17/10/2014
+
+Updated to Python3 by Diego Fuentes Palacios
+Barcelona 08/18/2022
 """
 
 import os, resource, sys

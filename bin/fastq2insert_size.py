@@ -8,6 +8,9 @@ epilog="""Author:
 l.p.pryszcz@gmail.com
 
 Mizerow, 10/04/2015
+
+Updated to Python3 by Diego Fuentes Palacios
+Barcelona 08/18/2022
 """
 
 import math, os, sys, subprocess

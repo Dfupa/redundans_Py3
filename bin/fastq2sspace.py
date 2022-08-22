@@ -5,6 +5,9 @@ epilog="""Author:
 l.p.pryszcz+git@gmail.com
 
 19/06/2012 Dublin/Warsaw
+
+Updated to Python3 by Diego Fuentes Palacios
+Barcelona 08/18/2022
 """
 
 import os, subprocess, sys, tempfile
@@ -26,7 +29,7 @@ def parse_sam(handle):
         #However, ingore if the number of fields does not reach minimum
         if len(sam) < 11:
             continue
-        
+
         if int(sam[1]) & 64:
             # skip multiple matches
             if sam[0] == q1:
