@@ -79,7 +79,8 @@ def checkQualityEncoding(inFile, number_reads, qual64offset, qseq):
 def qseqparser(handle, limit=0):
     """Parse QSEQ fromat and yield name, sequence and qualities."""
 
-    for l in handle:
+    for le in handle:
+        l = le.decode['utf-8']
         if limit and i>limit:
             break
         ## Example SOLEXA read
@@ -139,6 +140,12 @@ def rawtrimmer(infile, minlen, maxlen, limit, minqual, qual64offset, qseq, strip
             yield
             continue
         name, seq, quals = read
+
+        #Reformat to string instead of byte
+        name = name.decode('utf-8')
+        seq = seq.decode('utf-8')
+        quals = quals.decode('utf-8')
+        
 
         ## Clip seq & quals @ N ( unknown base )
         seq, quals = _clipSeq(seq, quals, 'N')

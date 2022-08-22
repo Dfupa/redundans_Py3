@@ -15,12 +15,18 @@ def _unload_sam(sam):
 def parse_sam(handle):
     """Return tuple representing entries from SAM."""
     q1 = q2 = ""
-    for l in handle:
+    for le in handle:
+        l= le.decode('utf-8')
         l = l.strip()
         if not l or l.startswith('@'):
             continue
         sam = l.split('\t')
-        # first in pair
+        ## first in pair
+
+        #However, ingore if the number of fields does not reach minimum
+        if len(sam) < 11:
+            continue
+        
         if int(sam[1]) & 64:
             # skip multiple matches
             if sam[0] == q1:
@@ -68,7 +74,7 @@ def sam2sspace_tab(inhandle, outhandle, mapqTh=0, upto=float('inf'), verbose=Fal
         if mapqTh:
             if mapq1 < mapqTh or mapq2 < mapqTh:
                 if _tmpfile:
-                    _tmpfile.write(sam2fastq("%s/1"%i, seq1, qual1, flag1)+sam2fastq("%s/2"%i, seq2, qual2, flag2))
+                    _tmpfile.write((sam2fastq("%s/1"%i, seq1, qual1, flag1)+sam2fastq("%s/2"%i, seq2, qual2, flag2)).encode('utf-8'))
                 continue
         if q1!=q2:
             log.write("[Warning] Queries have different names: %s vs %s\n" % (q1, q2))
@@ -153,7 +159,8 @@ def _last2pairs(handle):
     """Yield pairs from LASTal"""
     pq = ""
     hits = [[]]
-    for l in handle: 
+    for le in handle:
+        l= le.decode('utf-8')
         if l.startswith('#'): 
             continue
         # unpack

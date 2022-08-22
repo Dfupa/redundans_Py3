@@ -54,7 +54,8 @@ def run_last_q2best(fasta, identity, threads, verbose=1):
 
 def _qhits_generator(handle, minLength):
     pq, pqsize, hits = '', 0, {}
-    for l in handle: 
+    for line in handle:
+        l = line.decode("utf-8")
         if l.startswith('#'): 
             continue
         # unpack

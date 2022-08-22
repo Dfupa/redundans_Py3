@@ -22,10 +22,11 @@ Mizerow/Warsaw/Bratislava/Barcelona, 17/10/2014
 import os, resource, sys
 import glob, subprocess, time
 from datetime import datetime
+from io import TextIOWrapper
 
 # update sys.path & environmental PATH
 root = os.path.dirname(os.path.abspath(sys.argv[0]))
-src = ["bin", "bin/bwa", "bin/snap", "bin/pyScaf", "bin/last/build", "bin/last/scripts", "bin/last/src",]
+src = ["bin/", "bin/bwa/", "bin/snap/", "bin/pyScaf/", "bin/last/build/", "bin/last/scripts/", "bin/last/src/",]
 paths = [os.path.join(root, p) for p in src]
 sys.path = paths + sys.path
 os.environ["PATH"] = "%s:%s"%(':'.join(paths), os.environ["PATH"])
@@ -427,7 +428,16 @@ def redundans(fastq, longreads, fasta, reference, outdir, mapq,
 def _check_executable(cmd):
     """Check if executable exists."""
     p = subprocess.Popen("type " + cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    return "".join(p.stdout.readlines())
+    print(p)
+    #print(os.environ["PATH"])
+    #print("type " + cmd)
+    ##stdout=subprocess.PIPE  stdout.readlines()
+    #print(subprocess.STDOUT)
+    
+    stdout = p.stdout.readlines()[0].decode("utf-8")
+    #stdout.readlines())
+    #print(stdout)
+    return "".join(stdout)
 
 def _check_dependencies(dependencies):
     """Return error if wrong software version"""
@@ -435,13 +445,14 @@ def _check_dependencies(dependencies):
     # check dependencies
     info = "[WARNING] Old version of %s: %s. Update to version %s+!\n"
     for cmd, version in list(dependencies.items()):
+        print("Checking %s version %s"%(cmd, version))
         out = _check_executable(cmd)
         if "not found" in out:
             warning = 1
             sys.stderr.write("[ERROR] %s\n"%out)
         elif version:
             p = subprocess.Popen([cmd, '--version'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-            out = "".join(p.stdout.readlines())
+            out = "".join(p.stdout.readlines()[0].decode("utf-8"))
             curver = out.split()[-1]
             if not curver.isdigit():
                 warning = 1

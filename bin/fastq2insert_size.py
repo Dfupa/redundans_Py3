@@ -115,7 +115,8 @@ def get_isize_stats(fq1, fq2, fasta, mapqTh=10, threads=1, limit=1e5, verbose=0,
     isizes = [[], [], [], []] 
     readlen = 0
     #read from stdin
-    for i, sam in enumerate(aligner.stdout, 1):
+    for i, bam in enumerate(aligner.stdout, 1):
+        sam = bam.decode('utf-8')
         if sam.startswith("@"):
             continue
         if verbose and not i%1000:
