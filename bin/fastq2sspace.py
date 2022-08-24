@@ -77,7 +77,7 @@ def sam2sspace_tab(inhandle, outhandle, mapqTh=0, upto=float('inf'), verbose=Fal
         if mapqTh:
             if mapq1 < mapqTh or mapq2 < mapqTh:
                 if _tmpfile:
-                    _tmpfile.write((sam2fastq("%s/1"%i, seq1, qual1, flag1)+sam2fastq("%s/2"%i, seq2, qual2, flag2)).encode('utf-8'))
+                    _tmpfile.write((sam2fastq("%s/1"%i, seq1, qual1, flag1).encode('utf-8')+sam2fastq("%s/2"%i, seq2, qual2, flag2).encode('utf-8')))
                 continue
         if q1!=q2:
             log.write("[Warning] Queries have different names: %s vs %s\n" % (q1, q2))
@@ -171,7 +171,6 @@ def _last2pairs(handle):
         score, tstart, talg = list(map(int, (score, tstart, talg)))
         # report previous query
         if pq != q:
-            #print map(len, hits)
             if list(map(len, hits)) == [1, 1] and hits[0][0][-1][:-1] == hits[1][0][-1][:-1]:
                 yield hits[0][0][1:4], hits[1][0][1:4]
                 hits = [[]]
