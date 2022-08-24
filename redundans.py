@@ -431,15 +431,7 @@ def redundans(fastq, longreads, fasta, reference, outdir, mapq,
 def _check_executable(cmd):
     """Check if executable exists."""
     p = subprocess.Popen("type " + cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    print(p)
-    #print(os.environ["PATH"])
-    #print("type " + cmd)
-    ##stdout=subprocess.PIPE  stdout.readlines()
-    #print(subprocess.STDOUT)
-    
     stdout = p.stdout.readlines()[0].decode("utf-8")
-    #stdout.readlines())
-    #print(stdout)
     return "".join(stdout)
 
 def _check_dependencies(dependencies):
@@ -448,7 +440,7 @@ def _check_dependencies(dependencies):
     # check dependencies
     info = "[WARNING] Old version of %s: %s. Update to version %s+!\n"
     for cmd, version in list(dependencies.items()):
-        print("Checking %s version %s"%(cmd, version))
+        #print("Checking %s version %s"%(cmd, version))
         out = _check_executable(cmd)
         if "not found" in out:
             warning = 1
@@ -479,13 +471,13 @@ def main():
     parser.add_argument("-i", "--fastq", nargs="*", default=[], help="FASTQ PE / MP files")
     parser.add_argument("-f", "--fasta", default="", help="FASTA file with contigs / scaffolds")
     parser.add_argument("-o", "--outdir", default="redundans", help="output directory [%(default)s]")
-    parser.add_argument("-t", "--threads", default=4, type=int, help="max threads to run [%(default)s]")
+    parser.add_argument("-t", "--threads", default=16, type=int, help="max threads to run [%(default)s]")
     parser.add_argument("--resume",  default=False, action="store_true", help="resume previous run")
     parser.add_argument("--log", default=sys.stderr, type=argparse.FileType('w'), help="output log to [stderr]")
     parser.add_argument('--nocleaning', action='store_false', help="keep intermediate files")
     
     denovo = parser.add_argument_group('De novo assembly options')
-    denovo.add_argument("-m", "--mem", default=16, type=int, help="max memory to allocate (in GB) [%(default)s]")
+    denovo.add_argument("-m", "--mem", default=2, type=int, help="max memory to allocate (in GB) [%(default)s]")
     denovo.add_argument("--tmp", default='/tmp', help="tmp directory [%(default)s]")
     
     redu = parser.add_argument_group('Reduction options')
