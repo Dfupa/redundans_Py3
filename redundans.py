@@ -29,7 +29,7 @@ from io import TextIOWrapper
 
 # update sys.path & environmental PATH
 root = os.path.dirname(os.path.abspath(sys.argv[0]))
-src = ["bin/", "bin/bwa/", "bin/snap/", "bin/pyScaf/", "bin/last/build/", "bin/last/scripts/", "bin/last/src/",]
+src = ["bin/", "bin/bwa/", "bin/snap/", "bin/pyScaf/", "bin/last/build/", "bin/last/scripts/", "bin/last/src/", "bin/minimap2/"]
 paths = [os.path.join(root, p) for p in src]
 sys.path = paths + sys.path
 os.environ["PATH"] = "%s:%s"%(':'.join(paths), os.environ["PATH"])
@@ -274,9 +274,9 @@ def _check_fasta(lastOutFn, minSize=1000, log=sys.stderr):
         
 def redundans(fastq, longreads, fasta, reference, outdir, mapq, 
               threads, mem, resume, identity, overlap, minLength, \
-              joins, linkratio, readLimit, iters, sspacebin, \
+              joins, linkratio, readLimit, iters, sspacebin, preset, \
               reduction=1, scaffolding=1, gapclosing=1, cleaning=1, \
-              norearrangements=0, verbose=1, usebwa=0, log=sys.stderr, tmp="/tmp"):
+              norearrangements=0, verbose=1, usebwa=0, useminimap2=0, log=sys.stderr, tmp="/tmp"):
     """Launch redundans pipeline."""
     # check resume
     orgresume = resume
@@ -350,8 +350,13 @@ def redundans(fastq, longreads, fasta, reference, outdir, mapq,
         for i, fname in enumerate(longreads, 1):
             if verbose:
                 log.write(" iteration %s...\n"%i)
-            s = LongReadGraph(lastOutFn, fname, identity, overlap, maxgap=0, threads=threads, \
-                              dotplot="", norearrangements=norearrangements, log=0)
+            
+            print(preset)
+            s = LongReadGraph(lastOutFn, fname, identity, overlap, preset=preset, useminimap2=useminimap2, maxgap=0, threads=threads, \
+                        dotplot="", norearrangements=norearrangements, log=0)
+            #else:
+            #    s = LongReadGraph(lastOutFn, fname, identity, overlap, maxgap=0, threads=threads, \
+            #                  dotplot="", norearrangements=norearrangements, log=0)
             # save output
             _outfn = os.path.join(outdir, "scaffolds.longreads.%s.fa"%i)
             with open(_outfn, "w") as out:
@@ -498,6 +503,8 @@ def main():
      
     longscaf = parser.add_argument_group('Long-read scaffolding options')
     longscaf.add_argument("-l", "--longreads", nargs="*", default=[], help="FastQ/FastA files with long reads")
+    longscaf.add_argument("--useminimap2", action='store_true', help="Use Minimap2 for aligning long reads. By default LAST.")
+    longscaf.add_argument("-p", "--preset", default="map-ont", help="Minimap2 preset for PacBio/ONT reads. Possible values map-ont[default], map-pb and map-hifi")
     
     refscaf = parser.add_argument_group('Reference-based scaffolding options')
     refscaf.add_argument("-r", "--reference", default='', help="reference FastA file")
@@ -537,9 +544,9 @@ def main():
     # initialise pipeline
     redundans(o.fastq, o.longreads, o.fasta, o.reference, o.outdir, o.mapq, \
               o.threads, o.mem, o.resume, o.identity, o.overlap, o.minLength,  \
-              o.joins, o.linkratio, o.limit, o.iters, sspacebin, \
+              o.joins, o.linkratio, o.limit, o.iters, sspacebin, o.preset, \
               o.noreduction, o.noscaffolding, o.nogapclosing, o.nocleaning, \
-              o.norearrangements, o.verbose, o.usebwa, o.log, o.tmp)
+              o.norearrangements, o.verbose, o.usebwa, o.useminimap2, o.log, o.tmp)
 
 if __name__=='__main__': 
     t0 = datetime.now()

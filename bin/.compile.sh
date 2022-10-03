@@ -50,5 +50,9 @@ echo `date` " Minimap2"
 (cd bin/minimap2 && make clean && make) >> $log 2>&1
 retcode=$?; if [ $retcode -gt 0 ]; then exit $retcode; fi
 
+echo `date` " k8"
+(cd bin && curl -L https://github.com/attractivechaos/k8/releases/download/v0.2.4/k8-0.2.4.tar.bz2 | tar -jxf - && mv -t . ./k8-0.2.4/k8-Linux && rm -r ./k8-0.2.4/) >> $log 2>&1
+retcode=$?; if [ $retcode -gt 0 ]; then exit $retcode; fi
+
 echo `date` "Done!"
 
