@@ -17,3 +17,8 @@
 [submodule "bin/last"]
 	path = bin/last
 	url = https://github.com/Gabaldonlab/last
+    
+[submodule "bin/minimap2"]
+	path = bin/minimap2
+	url = https://github.com/lh3/minimap2
+

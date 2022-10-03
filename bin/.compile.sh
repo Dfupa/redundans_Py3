@@ -42,8 +42,12 @@ echo `date` " LASTal"
 retcode=$?; if [ $retcode -gt 0 ]; then exit $retcode; fi
 
 echo `date` " SNAP-aligner"
-(cd bin && wget -nc https://github.com/amplab/snap/releases/download/v2.0.1/snap-aligner && chmod +x snap-aligner)
+(cd bin && wget -nc https://github.com/amplab/snap/releases/download/v2.0.1/snap-aligner && chmod +x snap-aligner)  >> $log 2>&1
 #(cd bin/snap && make clean && make -j $cores) >> $log 2>&1
+retcode=$?; if [ $retcode -gt 0 ]; then exit $retcode; fi
+
+echo `date` " Minimap2"
+(cd bin/minimap2 && make clean && make) >> $log 2>&1
 retcode=$?; if [ $retcode -gt 0 ]; then exit $retcode; fi
 
 echo `date` "Done!"
