@@ -1,5 +1,3 @@
-This repository is archived. Please use https://github.com/lpryszcz/redundans for updates and reporting any new issues. 
-
 ### Table of Contents
 - **[Redundans](#redundans)**  
   - **[Prerequisites](#prerequisites)**  
@@ -38,11 +36,13 @@ Redundans uses several programs (all provided within this repository):
 - [Platanus](http://platanus.bio.titech.ac.jp/?page_id=14) 
 - [LAST](http://last.cbrc.jp/) v800+
 - [BWA](http://bio-bwa.sourceforge.net/) v0.7.12+
+- [Minimap2]()
 - [SNAP aligner](https://github.com/amplab/snap)
 - [SSPACE3](http://www.baseclear.com/genomics/bioinformatics/basetools/SSPACE)
 - [GapCloser](http://sourceforge.net/projects/soapdenovo2/files/GapCloser/)
 - [pyScaf](https://github.com/lpryszcz/pyScaf)
 - [FastaIndex](https://github.com/lpryszcz/FastaIndex)
+- [k8](https://github.com/attractivechaos/k8/) v0.2.4+
 
 On most Linux distros, the installation should be as easy as:
 ```
@@ -51,9 +51,9 @@ cd redundans && bin/.compile.sh
 ```
 
 If it fails, make sure you have below dependencies installed: 
-- Python 2.7 or 2.6
+- Python >= 3
 - Perl [SSPACE3]
-- make, gcc & g++ [BWA & LAST] ie. `sudo apt-get install make gcc g++`
+- make, gcc & g++ [BWA, Minimap2 & LAST] ie. `sudo apt-get install make gcc g++`
 - [zlib including zlib.h headers](http://zlib.net/) [BWA] ie. `sudo apt-get install zlib1g-dev`
 - optionally for plotting `numpy` and `matplotlib` ie. `sudo -H pip install -U matplotlib numpy`
 

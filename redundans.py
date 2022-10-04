@@ -22,10 +22,11 @@ Updated to Python3 by Diego Fuentes Palacios
 Barcelona 08/18/2022
 """
 
-import os, resource, sys
+import os, resource, sys, re
 import glob, subprocess, time
 from datetime import datetime
 from io import TextIOWrapper
+from traceback import print_list
 
 # update sys.path & environmental PATH
 root = os.path.dirname(os.path.abspath(sys.argv[0]))
@@ -274,7 +275,7 @@ def _check_fasta(lastOutFn, minSize=1000, log=sys.stderr):
         
 def redundans(fastq, longreads, fasta, reference, outdir, mapq, 
               threads, mem, resume, identity, overlap, minLength, \
-              joins, linkratio, readLimit, iters, sspacebin, preset, \
+              joins, linkratio, readLimit, iters, sspacebin, \
               reduction=1, scaffolding=1, gapclosing=1, cleaning=1, \
               norearrangements=0, verbose=1, usebwa=0, useminimap2=0, log=sys.stderr, tmp="/tmp"):
     """Launch redundans pipeline."""
@@ -351,7 +352,23 @@ def redundans(fastq, longreads, fasta, reference, outdir, mapq,
             if verbose:
                 log.write(" iteration %s...\n"%i)
             
-            print(preset)
+            #Add a check to change preset based on filename if provided a list of files:
+            
+            if re.search("ont", fname, flags=re.IGNORECASE) or re.search("nanopore", fname, flags=re.IGNORECASE) or re.search("oxford", fname, flags=re.IGNORECASE):
+                preset = "map-ont"
+            elif re.search("pb", fname, flags=re.IGNORECASE) or re.search("pacbio", fname, flags=re.IGNORECASE) or re.search("smrt", fname, flags=re.IGNORECASE):
+                preset = "map-pb"
+            elif re.search("hifi", fname, flags=re.IGNORECASE) or re.search("hi_fi", fname, flags=re.IGNORECASE) or re.search("hi-fi", fname, flags=re.IGNORECASE):
+                preset = "map-hifi"
+            else:
+                #Added this to default to ONT
+                preset = "map-ont"
+
+            if useminimap2 and verbose:
+                log.write("Using minimap2 preset %s for file %s...\n"%(preset, fname))
+            elif verbose:
+                log.write("Using LAST for file %s...\n"%fname)
+
             s = LongReadGraph(lastOutFn, fname, identity, overlap, preset=preset, useminimap2=useminimap2, maxgap=0, threads=threads, \
                         dotplot="", norearrangements=norearrangements, log=0)
             #else:
@@ -502,9 +519,8 @@ def main():
     scaf.add_argument("-b", "--usebwa", action='store_true', help="use bwa mem for alignment [use snap-aligner]")
      
     longscaf = parser.add_argument_group('Long-read scaffolding options')
-    longscaf.add_argument("-l", "--longreads", nargs="*", default=[], help="FastQ/FastA files with long reads")
-    longscaf.add_argument("--useminimap2", action='store_true', help="Use Minimap2 for aligning long reads. By default LAST.")
-    longscaf.add_argument("-p", "--preset", default="map-ont", help="Minimap2 preset for PacBio/ONT reads. Possible values map-ont[default], map-pb and map-hifi")
+    longscaf.add_argument("-l", "--longreads", nargs="*", default=[], help="FastQ/FastA files with long reads. By default LAST")
+    longscaf.add_argument("--useminimap2", action='store_true', help="Use Minimap2 for aligning long reads. Preset usage dependant on file name convention (case insensitive): ont, nanopore, pb, pacbio, hifi, hi_fi, hi-fi. ie: s324_nanopore.fq.gz.")
     
     refscaf = parser.add_argument_group('Reference-based scaffolding options')
     refscaf.add_argument("-r", "--reference", default='', help="reference FastA file")
@@ -544,7 +560,7 @@ def main():
     # initialise pipeline
     redundans(o.fastq, o.longreads, o.fasta, o.reference, o.outdir, o.mapq, \
               o.threads, o.mem, o.resume, o.identity, o.overlap, o.minLength,  \
-              o.joins, o.linkratio, o.limit, o.iters, sspacebin, o.preset, \
+              o.joins, o.linkratio, o.limit, o.iters, sspacebin, \
               o.noreduction, o.noscaffolding, o.nogapclosing, o.nocleaning, \
               o.norearrangements, o.verbose, o.usebwa, o.useminimap2, o.log, o.tmp)
 
