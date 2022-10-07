@@ -36,12 +36,14 @@ Redundans uses several programs (all provided within this repository):
 - [Platanus](http://platanus.bio.titech.ac.jp/?page_id=14) 
 - [LAST](http://last.cbrc.jp/) v800+
 - [BWA](http://bio-bwa.sourceforge.net/) v0.7.12+
-- [Minimap2]()
+- [Minimap2](https://github.com/lh3/minimap2)
 - [SNAP aligner](https://github.com/amplab/snap)
 - [SSPACE3](http://www.baseclear.com/genomics/bioinformatics/basetools/SSPACE)
 - [GapCloser](http://sourceforge.net/projects/soapdenovo2/files/GapCloser/)
 - [pyScaf](https://github.com/lpryszcz/pyScaf)
 - [FastaIndex](https://github.com/lpryszcz/FastaIndex)
+- [Meryl](https://github.com/marbl/meryl)
+- [Merqury](https://github.com/marbl/merqury)
 - [k8](https://github.com/attractivechaos/k8/) v0.2.4+
 
 On most Linux distros, the installation should be as easy as:
@@ -54,6 +56,7 @@ If it fails, make sure you have below dependencies installed:
 - Python >= 3
 - Perl [SSPACE3]
 - make, gcc & g++ [BWA, Minimap2 & LAST] ie. `sudo apt-get install make gcc g++`
+- R >= 3.6, ggplot2, scales, argparser for Merqury ie. `sudo apt-get install r-base r-cran-ggplot2 r-cran-scales r-cran-argparse`
 - [zlib including zlib.h headers](http://zlib.net/) [BWA] ie. `sudo apt-get install zlib1g-dev`
 - optionally for plotting `numpy` and `matplotlib` ie. `sudo -H pip install -U matplotlib numpy`
 
@@ -136,11 +139,13 @@ Most of the pipeline parameters can be adjusted manually (default values are giv
   -q MAPQ, --mapq MAPQ  min mapping quality [10]
   --iters ITERS         iterations per library [2]
   --noscaffolding       Skip short-read scaffolding
+  -b, --usebwa          use bwa mem for alignment [use snap-aligner]
 ```
 - Long-read scaffolding options:
 ```
   -l LONGREADS, --longreads LONGREADS
                         FastQ/FastA files with long reads
+  --useminimap2         Use Minimap2 for aligning long reads. Preset usage dependant on file name convention (case insensitive): ont, nanopore, pb, pacbio, hifi, hi_fi, hi-fi. ie: s324_nanopore.fq.gz.
   --identity IDENTITY   min. identity [0.51]
   --overlap OVERLAP     min. overlap  [0.80]
 ```
@@ -157,8 +162,13 @@ Most of the pipeline parameters can be adjusted manually (default values are giv
   --iters ITERS         iterations per library [2]
   --nogapclosing                        
 ```
+- Meryl and Merqury options:
+```
+  --nomerqury           Skip meryldb and merqury assembly stats.
+  -k KMER, --kmer KMER  K-mer size for meryl [21]
+```
 
-Redundans is **extremely flexible**. All steps of the pipeline can be ommited using: `--noreduction`, `--noscaffolding` and/or `--nogapclosing` parameters. 
+Redundans is **extremely flexible**. All steps of the pipeline can be ommited using: `--noreduction`, `--noscaffolding`, `--nogapclosing` and/or `--nomerqury` parameters. 
 
 ### Test run
 To run the test example, execute: 
