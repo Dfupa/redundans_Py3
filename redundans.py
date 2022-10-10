@@ -397,7 +397,7 @@ def merqury_statistics(outdir, meryldb, outfile, threads, mem, kmer=21, verbose=
     name = "asm.k%s.0.%s"%(kmer, os.path.basename(assembly_db))
     path = os.path.join(mqout, name)
 
-    cmd = "echo -e \"Copies\tkmer_multiplicity\tCount\" > %s"%os.path.join(mqout, "spectra-cn.hist")
+    cmd = "echo \"Copies\tkmer_multiplicity\tCount\" > %s"%os.path.join(mqout, "spectra-cn.hist")
     subprocess.Popen(cmd, shell=True)
 
     args5 = "meryl difference output %s %s %s %s %s"%(t, m, path, meryldb, assembly_db)
@@ -409,6 +409,8 @@ def merqury_statistics(outdir, meryldb, outfile, threads, mem, kmer=21, verbose=
     proc6.communicate()
 
     #group kmers based on copy number from 1 to 4
+    if verbose:
+        sys.stderr.write("Group kmers based on copy number from 1 to 4 and larger than 4.\n")
     for i in range(1, 5, 1):
         name_i = "asm.k%s.%s.%s"%(kmer, i, os.path.basename(assembly_db))
         path_i = os.path.join(mqout, name_i)
@@ -459,14 +461,15 @@ def merqury_statistics(outdir, meryldb, outfile, threads, mem, kmer=21, verbose=
     MULTI = str(int(PRESENT)-int(DISTINCT))
 
     #Store results in a complementary hist file
-    cmd = "echo -e \"1\t0\t%s\" > %s"%(DISTINCT, os.path.join(mqout, "only.hist"))
+    cmd = "echo \"1\t0\t%s\" > %s"%(DISTINCT, os.path.join(mqout, "only.hist"))
     subprocess.Popen(cmd, shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
-    cmd = "echo -e \"2\t0\t%s\" >> %s"%(MULTI, os.path.join(mqout, "only.hist"))
+    cmd = "echo \"2\t0\t%s\" >> %s"%(MULTI, os.path.join(mqout, "only.hist"))
     subprocess.Popen(cmd, shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
 
 
     #Generate the QV statistics
-
+    if verbose:
+        sys.stderr.write("Generate the QV statistics here: %s\n"%os.path.join(mqout, (os.path.basename(outfile)+".qv")))
 
     args16="meryl statistics %s %s %s| head -n4 | tail -n1 | awk '{print $2}'"%(t, m, path)
     proc16 = subprocess.Popen(args16, stdout=subprocess.PIPE, stderr=sys.stderr, shell=True)
@@ -487,7 +490,7 @@ def merqury_statistics(outdir, meryldb, outfile, threads, mem, kmer=21, verbose=
     QV=proc19.stdout.read().decode("utf-8").strip()
 
     #Store it in QV file
-    qv_cmd="echo -e \"%s\t%s\t%s\t%s\t%s\" >> %s"%(os.path.basename(outfile), ASM_ONLY, TOTAL, QV, ERROR, os.path.join(mqout, (os.path.basename(outfile)+".qv")))
+    qv_cmd="echo \"%s\t%s\t%s\t%s\t%s\" >> %s"%(os.path.basename(outfile), ASM_ONLY, TOTAL, QV, ERROR, os.path.join(mqout, (os.path.basename(outfile)+".qv")))
     subprocess.Popen(qv_cmd, shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
 
     # Per seq QV statistics"
@@ -498,6 +501,9 @@ def merqury_statistics(outdir, meryldb, outfile, threads, mem, kmer=21, verbose=
 
 
     # k-mer completeness (recoveray rate) with solid k-mers for $asm with > $filt counts"
+
+    if verbose:
+        sys.stderr.write("Generate the k-mer completeness (recovery rate) with solid k-mers over %s.\n"%kmer)
 
     args21 = "meryl intersect output %s %s %s %s %s"%(t, m, os.path.join(mqout, "assembly_filtered_k%s.meryl"%kmer_filt), assembly_db, os.path.join(mqout, "filtered_k%s.complete.meryl"%kmer_filt))
     proc21 = subprocess.Popen(args21, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT, shell=True)
@@ -512,7 +518,7 @@ def merqury_statistics(outdir, meryldb, outfile, threads, mem, kmer=21, verbose=
     ASM=proc23.stdout.read().decode("utf-8").strip()
 
     try:
-        completeness_cmd = "echo -e \"%s\tall\t%s\t%s\" | awk '{print $0\"\t\"((100*$3)/$4)}' >> %s"%(os.path.basename(outfile), ASM, TOTAL, os.path.join(mqout, os.path.basename(outfile)+".completeness.stats"))
+        completeness_cmd = "echo \"%s\tall\t%s\t%s\" | awk '{print $0\"\t\"((100*$3)/$4)}' >> %s"%(os.path.basename(outfile), ASM, TOTAL, os.path.join(mqout, os.path.basename(outfile)+".completeness.stats"))
         subprocess.Popen(completeness_cmd, shell=True)
     except ValueError as e:
         sys.stderr.write("[WARNING] Couldn't generate kmer completeness plot")
@@ -529,7 +535,7 @@ def merqury_statistics(outdir, meryldb, outfile, threads, mem, kmer=21, verbose=
     proc24.communicate()
     
     histname=os.path.join(mqout, os.path.basename(outfile)+".spectra-asm.hist")
-    args25= "echo -e \"Assembly\tkmer_multiplicity\tCount\" > %s"%(histname)
+    args25= "echo \"Assembly\tkmer_multiplicity\tCount\" > %s"%(histname)
     subprocess.Popen(args25, shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
 
     args26 = "meryl histogram %s %s %s | awk '{print \"read-only\t\"$0}' >> %s"%(t, m, path, histname)
@@ -547,11 +553,11 @@ def merqury_statistics(outdir, meryldb, outfile, threads, mem, kmer=21, verbose=
     ASM_ONLY=proc28.stdout.read().decode("utf-8").strip()
 
     hist_only=os.path.join(mqout, os.path.basename(outfile)+".dist_only.hist")
-    args25= "echo -e \"%s\t0\t%s\" >  %s"%(os.path.basename(outfile), ASM_ONLY, hist_only)
+    args25= "echo \"%s\t0\t%s\" >  %s"%(os.path.basename(outfile), ASM_ONLY, hist_only)
     subprocess.Popen(args25, shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
 
     if verbose:
-        sys.stderr.write("[INFO] Plotting the results in spectra plots\n")
+        sys.stderr.write("[INFO] Plotting the results in spectra plots here %s\n"%mqout)
 
     rcommand = "Rscript bin/merqury/plot/plot_spectra_cn.R -f %s -o %s -z %s"%(os.path.join(mqout, "spectra-cn.hist"), os.path.join(mqout, "results.spectra-cn"), os.path.join(mqout, "only.hist"))
     rproc = subprocess.Popen(rcommand, stdout=subprocess.PIPE, stderr=sys.stderr, shell=True)
@@ -879,7 +885,11 @@ def main():
     sspacebin = os.path.join(root, "bin/SSPACE/SSPACE_Standard_v3.0.pl")
 
     # check if all executables exists & in correct versions
-    dependencies = {'lastal': 800, 'lastdb': 800, 'GapCloser': 0, 'paste': 0, 'tr': 0, 'zcat': 0, 'platanus': 0, 'R' : 340}
+    #If using merqury, check for R version, else do not bother
+    if o.nomerqury:
+        dependencies = {'lastal': 800, 'lastdb': 800, 'GapCloser': 0, 'paste': 0, 'tr': 0, 'zcat': 0, 'platanus': 0, 'R' : 360}
+    else:
+        dependencies = {'lastal': 800, 'lastdb': 800, 'GapCloser': 0, 'paste': 0, 'tr': 0, 'zcat': 0, 'platanus': 0}
     _check_dependencies(dependencies)
     
     # initialise pipeline
