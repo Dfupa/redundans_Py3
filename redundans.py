@@ -575,7 +575,7 @@ def merqury_statistics(outdir, meryldb, outfile, threads, mem, kmer=21, verbose=
         
 def redundans(fastq, longreads, fasta, reference, outdir, mapq, 
               threads, mem, resume, identity, overlap, minLength, \
-              joins, linkratio, readLimit, iters, sspacebin, \
+              joins, linkratio, readLimit, iters, sspacebin, refpreset, \
               reduction=1, scaffolding=1, gapclosing=1, usemerqury=1, kmer=21, cleaning=1, \
               norearrangements=0, verbose=1, usebwa=0, useminimap2=0, log=sys.stderr, tmp="/tmp"):
     """Launch redundans pipeline."""
@@ -698,7 +698,7 @@ def redundans(fastq, longreads, fasta, reference, outdir, mapq,
         if verbose:
             log.write("%sScaffolding based on reference...\n"%timestamp())        
         s = SyntenyGraph(lastOutFn, reference, identity=0.51, overlap=0.66, maxgap=0, threads=threads, \
-                         dotplot="", norearrangements=norearrangements, log=0)
+                         dotplot="", norearrangements=norearrangements, useminimap2=useminimap2, preset=refpreset, log=0)
         # save output
         with open(outfn, "w") as out:
             s.save(out)
@@ -853,6 +853,7 @@ def main():
     refscaf.add_argument("-r", "--reference", default='', help="reference FastA file")
     refscaf.add_argument("--norearrangements", default=False, action='store_true', 
                          help="high identity mode (rearrangements not allowed)")
+    refscaf.add_argument("-p", "--preset", default='asm10', help="Preset option for minimap2 Reference-based scaffolding. Possible options: asm5 (5%. sequence divergence), asm10 (10%. sequence divergence) and asm20(20%. sequence divergence). Default [%(default)s]")
     
     gaps = parser.add_argument_group('Gap closing options')
     gaps.add_argument('--nogapclosing',  action='store_false', default=True)
@@ -896,7 +897,7 @@ def main():
     redundans(o.fastq, o.longreads, o.fasta, o.reference, o.outdir, o.mapq, \
               o.threads, o.mem, o.resume, o.identity, o.overlap, o.minLength,  \
               o.joins, o.linkratio, o.limit, o.iters, sspacebin, \
-              o.noreduction, o.noscaffolding, o.nogapclosing, o.nomerqury, o.kmer, o.nocleaning, \
+              o.preset, o.noreduction, o.noscaffolding, o.nogapclosing, o.nomerqury, o.kmer, o.nocleaning, \
               o.norearrangements, o.verbose, o.usebwa, o.useminimap2, o.log, o.tmp)
 
 if __name__=='__main__': 
